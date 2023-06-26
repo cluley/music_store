@@ -21,6 +21,15 @@ LEFT JOIN Artist art ON aa.artist_id = art.artist_id
 WHERE trc.lasting = (SELECT MIN(lasting) FROM Track);
 
 -- Названия альбомов, содержащих наименьшее количество треков.
-SELECT a.name, COUNT(*) FROM Track t
-LEFT JOIN Album a ON t.album_id = a.album_id
-GROUP BY a.name;
+WITH AlbumTrackCount AS (
+    SELECT a.Name AS AlbumName, COUNT(t.Track_id) AS TrackCount
+    FROM Album a
+    LEFT JOIN Track t ON a.Album_id = t.Album_id
+    GROUP BY a.Name
+)
+SELECT AlbumName
+FROM AlbumTrackCount
+WHERE TrackCount = (
+    SELECT MIN(TrackCount)
+    FROM AlbumTrackCount
+);
